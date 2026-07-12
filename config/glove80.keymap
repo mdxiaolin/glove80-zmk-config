@@ -1,7 +1,19 @@
 /*
- * Copyright (c) 2020 The ZMK Contributors
+ * Glove80 PACS keymap — E805G8 주 판독 스테이션용
+ * Base: moergo-sc/glove80-zmk-config 공장 기본 keymap (변경점만 오버레이)
+ * Spec: pacs-dashboard/docs/KEYBOARD_SHUTTLE_LAYOUT_PROPOSAL.md (2026-07-13 확정)
  *
- * SPDX-License-Identifier: MIT
+ * 변경점 6 + 레이어 2 (2026-07-13 XR-우선 재배치: XR 95%는 양손 키보드 자세 — 좌우 분업):
+ *  1. 왼엄지 T1  : tap=Sticky Shift(1글자) / hold=LShift
+ *  2. 왼엄지 T2  : tap=] 다음 이미지 / hold=LCtrl   (XR 뷰 전환 — 반복 tap, 연속 스크롤은 셔틀)
+ *  3. 왼엄지 T3  : tap=[ 이전 이미지 / hold=PACS층
+ *  4. 왼엄지 T6  : tap=Alt+F(normal 확인, 97/일) / hold=LAlt
+ *  5. 오른엄지 중: tap=Alt+D(저장+다음, 319/일) / hold=LCtrl  ← 기존 SmartSet "오른쪽 Ctrl=Alt+D" 습관 복원
+ *  6. 한/영(RAlt): tap=한/영 / hold=Nav층
+ *  - Alt+G(25/일)는 PACS층 G로만, Caps Word는 Nav층+A로 이동
+ *  - 기본 LOWER층 진입: Nav층 + T3 = &to LOWER (F11·미디어·CAPS 등), LOWER층 내 기존 &to DEFAULT로 복귀
+ *  - flavor: 모디파이어 hold(1,2,4,5)는 balanced(빠른 조합 롤 보호) + quick-tap(연타 반복),
+ *            레이어 hold(3,6)는 tap-preferred(한/영 빠른 tap 보호; 레이어는 의도적 hold)
  */
 
 #include <behaviors.dtsi>
@@ -18,11 +30,11 @@
 #define LOWER 1
 #define MAGIC 2
 #define FACTORY_TEST 3
+#define PACS 4
+#define NAV 5
 
 / {
     behaviors {
-        // For the "layer" key, it'd nice to be able to use it as either a shift or a toggle.
-        // Configure it as a tap dance, so the first tap (or hold) is a &mo and the second tap is a &to
         layer_td: tap_dance_0 {
             compatible = "zmk,behavior-tap-dance";
             label = "LAYER_TAP_DANCE";
@@ -39,6 +51,43 @@
             tapping-term-ms = <200>;
             bindings = <&mo>, <&rgb_ug_status_macro>;
         };
+
+        // 모디파이어 hold + 동사 tap (T2 Ctrl/Alt+D, T6 Alt/Alt+G)
+        // balanced: hold 중 다른 키가 눌렸다 떼지면 hold 판정 → 빠른 Ctrl+C/Alt+Tab 롤 보호.
+        // quick-tap: 연타(Alt+D 319/일) 시 tap 반복 보장.
+        vht: verb_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "VERB_HOLD_TAP";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <175>;
+            bindings = <&kp>, <&kp>;
+        };
+
+        // Shift hold + Sticky Shift tap (T1)
+        sht: sticky_shift_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "STICKY_SHIFT_TAP";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <175>;
+            bindings = <&kp>, <&sk>;
+        };
+
+        // 레이어 hold + 키 tap (T3 PACS층/Alt+F, 한/영 Nav층/RAlt)
+        // tap-preferred: 한/영 tap 직후 빠른 타이핑이 레이어로 오발동하지 않도록.
+        plt: pacs_layer_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "PACS_LAYER_TAP";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <200>;
+            quick-tap-ms = <175>;
+            bindings = <&mo>, <&kp>;
+        };
+
     };
 
     macros {
@@ -91,21 +140,14 @@
         compatible = "zmk,keymap";
 
         default_layer {
-            // ---------------------------------------------------------------------------------------------------------------------------------
-            // |  F1   |  F2 |  F3 |  F4  |  F5  |                                                               |  F6   |  F7   |  F8  |   F9  |  F10 |
-            // |  =    |  1  |  2  |  3   |  4   |  5   |                                                 |  6   |   7   |   8   |  9   |   0   |   -  |
-            // |  TAB  |  Q  |  W  |  E   |  R   |  T   |                                                 |  Y   |   U   |   I   |  O   |   P   |   \  |
-            // |  ESC  |  A  |  S  |  D   |  F   |  G   |                                                 |  H   |   J   |   K   |  L   |   ;   |   '  |
-            // |   `   |  Z  |  X  |  C   |  V   |  B   | LSHFT | LCTRL | LOWER | | LGUI  | RCTRL | RSHFT |  N   |   M   |   ,   |  .   |   /   | PGUP |
-            // | MAGIC | HOME| END | LEFT | RIGHT|      | BSPC  | DEL   | LALT  | | RALT  | RET   | SPACE |      |  UP   | DOWN  |  [   |   ]   | PGDN |
-
+            // 공장 기본과의 차이는 엄지 6키뿐 (row5 좌 3 + 우 가운데 1, row6 좌 1 + 우 1)
             bindings = <
-            &kp F1         &kp F2   &kp F3      &kp F4      &kp F5                                                                                         &kp F6  &kp F7      &kp F8      &kp F9      &kp F10
-            &kp EQUAL      &kp N1   &kp N2      &kp N3      &kp N4      &kp N5                                                                     &kp N6  &kp N7  &kp N8      &kp N9      &kp N0      &kp MINUS
-            &kp TAB        &kp Q    &kp W       &kp E       &kp R       &kp T                                                                      &kp Y   &kp U   &kp I       &kp O       &kp P       &kp BSLH
-            &kp ESC        &kp A    &kp S       &kp D       &kp F       &kp G                                                                      &kp H   &kp J   &kp K       &kp L       &kp SEMI    &kp SQT
-            &kp GRAVE      &kp Z    &kp X       &kp C       &kp V       &kp B   &kp LSHFT   &kp LCTRL   &layer_td  &kp LGUI  &kp RCTRL &kp RSHFT   &kp N   &kp M   &kp COMMA   &kp DOT     &kp FSLH    &kp PG_UP
-            &magic MAGIC 0 &kp HOME &kp END     &kp LEFT    &kp RIGHT           &kp BSPC    &kp DEL     &kp LALT   &kp RALT  &kp RET   &kp SPACE           &kp UP  &kp DOWN    &kp LBKT    &kp RBKT    &kp PG_DN
+            &kp F1         &kp F2   &kp F3      &kp F4      &kp F5                                                                                                          &kp F6  &kp F7      &kp F8      &kp F9      &kp F10
+            &kp EQUAL      &kp N1   &kp N2      &kp N3      &kp N4      &kp N5                                                                                      &kp N6  &kp N7  &kp N8      &kp N9      &kp N0      &kp MINUS
+            &kp TAB        &kp Q    &kp W       &kp E       &kp R       &kp T                                                                                       &kp Y   &kp U   &kp I       &kp O       &kp P       &kp BSLH
+            &kp ESC        &kp A    &kp S       &kp D       &kp F       &kp G                                                                                       &kp H   &kp J   &kp K       &kp L       &kp SEMI    &kp SQT
+            &kp GRAVE      &kp Z    &kp X       &kp C       &kp V       &kp B   &sht LSHFT LSHFT &vht LCTRL RBKT  &plt PACS LBKT   &kp LGUI  &vht LCTRL LA(D) &kp RSHFT &kp N   &kp M   &kp COMMA   &kp DOT     &kp FSLH    &kp PG_UP
+            &magic MAGIC 0 &kp HOME &kp END     &kp LEFT    &kp RIGHT           &kp BSPC         &kp LA(F)        &vht LALT LA(G)  &plt NAV RALT &kp RET &kp SPACE          &kp UP  &kp DOWN    &kp LBKT    &kp RBKT    &kp PG_DN
             >;
         };
 
@@ -139,6 +181,35 @@
             &kp N3   &kp N9   &kp N5   &kp N1   &kp N7   &kp N2                                                            &kp N2   &kp N7   &kp N1   &kp N5   &kp N9   &kp N3
             &kp N4   &kp N0   &kp N6   &kp N2   &kp N8   &kp N3   &kp N4   &kp N5   &kp N6      &kp N6   &kp N5   &kp N4   &kp N3   &kp N8   &kp N2   &kp N6   &kp N0   &kp N4
             &kp N5   &kp N1   &kp N7   &kp N3   &kp N9            &kp N7   &kp N8   &kp N9      &kp N9   &kp N8   &kp N7            &kp N9   &kp N3   &kp N7   &kp N1   &kp N5
+            >;
+        };
+
+        // ── PACS층 (T3 hold) — 왼손 니모닉이 기존 AHK 핫키 그대로 방출 ─────────────
+        // Q=Alt+Tab W=Ctrl+W(위저드) E=Alt+E(차트) R=Alt+R(이전리포트) T=Alt+T
+        // A=Alt+A S=Alt+S D=Alt+D F=Alt+F G=Alt+G / Z=Ctrl+Alt+O X=Alt+Shift+E V=F12(Talon) B=Alt+B
+        // 1~5=Alt+1~5(오버레이 문구) / 오른손 H,J,K,;=Alt+H/J/K/;
+        pacs_layer {
+            bindings = <
+            &trans         &trans        &trans          &trans        &trans                                                                                                    &trans      &trans      &trans      &trans        &trans
+            &trans         &kp LA(N1)    &kp LA(N2)      &kp LA(N3)    &kp LA(N4)    &kp LA(N5)                                                                      &trans     &trans      &trans      &trans      &trans        &trans
+            &trans         &kp LA(TAB)   &kp LC(W)       &kp LA(E)     &kp LA(R)     &kp LA(T)                                                                       &trans     &trans      &trans      &trans      &trans        &trans
+            &trans         &kp LA(A)     &kp LA(S)       &kp LA(D)     &kp LA(F)     &kp LA(G)                                                                       &kp LA(H)  &kp LA(J)   &kp LA(K)   &trans      &kp LA(SEMI)  &trans
+            &trans         &kp LC(LA(O)) &kp LA(LS(E))   &trans        &kp F12       &kp LA(B)   &trans   &trans   &trans          &trans   &trans   &trans          &trans     &trans      &trans      &trans      &trans        &trans
+            &trans         &trans        &trans          &trans        &trans                    &trans   &trans   &trans          &trans   &trans   &trans                     &trans      &trans      &trans      &trans        &trans
+            >;
+        };
+
+        // ── Nav/Num층 (한/영 hold) — 오른손 JKL;=화살표, UIOP=Home/PgDn/PgUp/End, 왼손 숫자패드 ──
+        // 왼손: W,E,R=7,8,9 / S,D,F=4,5,6 / X,C,V=1,2,3 / G=0 (hotstring 접미 숫자용)
+        // Nav+T3 = &to LOWER (기본 LOWER층 진입 보존; 복귀는 LOWER 내 기존 &to DEFAULT)
+        nav_layer {
+            bindings = <
+            &trans         &trans        &trans          &trans        &trans                                                                                                    &trans      &trans      &trans      &trans        &trans
+            &trans         &trans        &trans          &trans        &trans        &trans                                                                          &trans     &trans      &trans      &trans      &trans        &trans
+            &trans         &trans        &kp N7          &kp N8        &kp N9        &trans                                                                          &trans     &kp HOME    &kp PG_DN   &kp PG_UP   &kp END       &trans
+            &trans         &caps_word    &kp N4          &kp N5        &kp N6        &kp N0                                                                          &trans     &kp LEFT    &kp DOWN    &kp UP      &kp RIGHT     &trans
+            &trans         &trans        &kp N1          &kp N2        &kp N3        &trans      &trans   &trans   &to LOWER       &trans   &trans   &trans          &trans     &trans      &trans      &trans      &trans        &trans
+            &trans         &trans        &trans          &trans        &trans                    &trans   &kp DEL  &trans          &trans   &trans   &trans                     &trans      &trans      &trans      &trans        &trans
             >;
         };
     };
