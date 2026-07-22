@@ -187,11 +187,12 @@
         // ── PACS층 (T3 hold) — 왼손 니모닉이 기존 AHK 핫키 그대로 방출 ─────────────
         // Q=Alt+Tab W=Ctrl+W(위저드) E=Alt+E(차트) R=Alt+R(이전리포트) T=Alt+T
         // A=Alt+A S=Alt+S D=Alt+D F=Alt+F G=Alt+G / Z=Ctrl+Alt+O X=Alt+Shift+E V=F12(Talon) B=Alt+B
-        // 1~5=Alt+1~5(오버레이 문구) / 오른손 H,J,K,;=Alt+H/J/K/;
+        // 1~3=F1~F3(오버레이 fast key 확인 — F1 13건/일 실측, 니모닉 "fast key n"=n; 2026-07-21 변경)
+        // 4~5=Alt+4/5(문구 삽입; 1~3 삽입은 물리 Alt+숫자 그대로) / 오른손 H,J,K,;=Alt+H/J/K/;
         pacs_layer {
             bindings = <
             &trans         &trans        &trans          &trans        &trans                                                                                                    &trans      &trans      &trans      &trans        &trans
-            &trans         &kp LA(N1)    &kp LA(N2)      &kp LA(N3)    &kp LA(N4)    &kp LA(N5)                                                                      &trans     &trans      &trans      &trans      &trans        &trans
+            &trans         &kp F1        &kp F2          &kp F3        &kp LA(N4)    &kp LA(N5)                                                                      &trans     &trans      &trans      &trans      &trans        &trans
             &trans         &kp LA(TAB)   &kp LC(W)       &kp LA(E)     &kp LA(R)     &kp LA(T)                                                                       &trans     &trans      &trans      &trans      &trans        &trans
             &trans         &kp LA(A)     &kp LA(S)       &kp LA(D)     &kp LA(F)     &kp LA(G)                                                                       &kp LA(H)  &kp LA(J)   &kp LA(K)   &trans      &kp LA(SEMI)  &trans
             &trans         &kp LC(LA(O)) &kp LA(LS(E))   &trans        &kp F12       &kp LA(B)   &trans   &trans   &trans          &trans   &trans   &trans          &trans     &trans      &trans      &trans      &trans        &trans
