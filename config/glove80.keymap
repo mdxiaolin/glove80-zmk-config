@@ -1,19 +1,29 @@
 /*
- * Glove80 PACS keymap — E805G8 주 판독 스테이션용
- * Base: moergo-sc/glove80-zmk-config 공장 기본 keymap (변경점만 오버레이)
- * Spec: pacs-dashboard/docs/KEYBOARD_SHUTTLE_LAYOUT_PROPOSAL.md (2026-07-13 확정)
+ * Glove80 PACS keymap v2 — DESKTOP-432SS3L (집, 온라인 PACS)
+ * 2026-09-05.  기준 문서: pacs-dashboard/docs/IRIS_CE_LAYOUT.md
  *
- * 변경점 6 + 레이어 2 (2026-07-13 XR-우선 재배치: XR 95%는 양손 키보드 자세 — 좌우 분업):
- *  1. 왼엄지 T1  : tap=Sticky Shift(1글자) / hold=LShift
- *  2. 왼엄지 T2  : tap=] 다음 이미지 / hold=LCtrl   (XR 뷰 전환 — 반복 tap, 연속 스크롤은 셔틀)
- *  3. 왼엄지 T3  : tap=[ 이전 이미지 / hold=PACS층
- *  4. 왼엄지 T6  : tap=Alt+F(normal 확인, 97/일) / hold=LAlt
- *  5. 오른엄지 중: tap=Alt+D(저장+다음, 319/일) / hold=LCtrl  ← 기존 SmartSet "오른쪽 Ctrl=Alt+D" 습관 복원
- *  6. 한/영(RAlt): tap=한/영 / hold=Nav층
- *  - Alt+G(25/일)는 PACS층 G로만, Caps Word는 Nav층+A로 이동
- *  - 기본 LOWER층 진입: Nav층 + T3 = &to LOWER (F11·미디어·CAPS 등), LOWER층 내 기존 &to DEFAULT로 복귀
- *  - flavor: 모디파이어 hold(1,2,4,5)는 balanced(빠른 조합 롤 보호) + quick-tap(연타 반복),
- *            레이어 hold(3,6)는 tap-preferred(한/영 빠른 tap 보호; 레이어는 의도적 hold)
+ * ⚠️ 아직 플래시하지 않았다. 현행 파일은 glove80_pacs.keymap 이고 이 파일은 후보다.
+ *    비교 후 교체할 것.
+ *
+ * v1 대비 변경 8건 — 병원 Iris CE 와 편의 순위를 일치시키기 위한 정합
+ *  1. 외곽열 정렬 : row2 '=' → gresc(Esc) / row4 ESC → LCTRL
+ *                   row5 GRAVE → sticky LShift / 오른쪽 row5 PG_UP → RSHFT
+ *  2. 엄지 재배치 : 편의 순위대로 (아래 표)
+ *  3. 물리 LGUI 제거 → '[' hold 가 담당
+ *  4. 최하단 외곽행 : magic·Home·End·←·→·↑·↓ 만 유지, [ ] PgDn 3키 제거(엄지/레이어와 중복)
+ *  5. pacs_layer 폐지 — 거의 쓰지 않았고, Alt/Ctrl 조합은 전부 물리 모디파이어로 된다
+ *  6. nav_layer → 통합 레이어(FN) 로 교체 : 왼손 이동+편집 / 오른손 F키 전부
+ *  7. Grave Escape 도입 — AHK 의 `+Esc::Send("~")` 대체(2026-09-05 폐기)
+ *  8. LOWER 진입 경로 이전 : 구 nav+T3 → FN + 왼엄지 안쪽
+ *
+ *  엄지 편의 순위 (Iris CE 와 동일한 동사·hold)
+ *    1위 아랫줄 바깥(rest) : BSpc            /  Space
+ *    2위 윗줄 바깥         : F14 hold=LAlt   /  F13 hold=LCtrl
+ *    3위 아랫줄 중간       : '[' hold=LGui   /  한/영 hold=FN
+ *    4위 윗줄 중간         : ']'             /  Enter
+ *
+ * ⚠️ F14=Alt+F(normal 확인), F15=Alt+G(이전복사+확인).
+ *    뒤집어 넣으면 확인 대신 이전 리포트를 붙여넣고 저장한다. 되돌릴 수 없다.
  */
 
 #include <behaviors.dtsi>
@@ -30,8 +40,7 @@
 #define LOWER 1
 #define MAGIC 2
 #define FACTORY_TEST 3
-#define PACS 4
-#define NAV 5
+#define FN 4
 
 / {
     behaviors {
@@ -52,20 +61,21 @@
             bindings = <&mo>, <&rgb_ug_status_macro>;
         };
 
-        // 모디파이어 hold + 동사 tap (T2 Ctrl/Alt+D, T6 Alt/Alt+G)
-        // balanced: hold 중 다른 키가 눌렸다 떼지면 hold 판정 → 빠른 Ctrl+C/Alt+Tab 롤 보호.
-        // quick-tap: 연타(Alt+D 319/일) 시 tap 반복 보장.
+        // 모디파이어 hold + 동사 tap (F13/F14/'[')
+        // balanced: hold 중 다른 키가 눌렸다 떼지면 hold 판정 → 빠른 Ctrl+C / Alt+Tab 롤 보호.
+        // quick-tap 0: F13/F14 는 확정 키라 연타하지 않는다(2026-09-05 사용자 확인).
+        //              자동반복을 끄면 hold 판정이 안정된다. cine 은 셔틀링이 담당.
         vht: verb_hold_tap {
             compatible = "zmk,behavior-hold-tap";
             label = "VERB_HOLD_TAP";
             #binding-cells = <2>;
             flavor = "balanced";
-            tapping-term-ms = <200>;
-            quick-tap-ms = <175>;
+            tapping-term-ms = <180>;
+            quick-tap-ms = <0>;
             bindings = <&kp>, <&kp>;
         };
 
-        // Shift hold + Sticky Shift tap (T1)
+        // Shift hold + Sticky Shift tap (왼쪽 외곽열 row5)
         sht: sticky_shift_tap {
             compatible = "zmk,behavior-hold-tap";
             label = "STICKY_SHIFT_TAP";
@@ -76,18 +86,27 @@
             bindings = <&kp>, <&sk>;
         };
 
-        // 레이어 hold + 키 tap (T3 PACS층/Alt+F, 한/영 Nav층/RAlt)
+        // 레이어 hold + 키 tap (한/영 → FN층)
         // tap-preferred: 한/영 tap 직후 빠른 타이핑이 레이어로 오발동하지 않도록.
         plt: pacs_layer_tap {
             compatible = "zmk,behavior-hold-tap";
             label = "PACS_LAYER_TAP";
             #binding-cells = <2>;
             flavor = "tap-preferred";
-            tapping-term-ms = <200>;
+            tapping-term-ms = <220>;
             quick-tap-ms = <175>;
             bindings = <&mo>, <&kp>;
         };
 
+        // Grave Escape : Esc / Shift+Esc = ~ / Win+Esc = `
+        gresc: grave_escape {
+            compatible = "zmk,behavior-mod-morph";
+            label = "GRAVE_ESCAPE";
+            #binding-cells = <0>;
+            bindings = <&kp ESC>, <&kp GRAVE>;
+            mods = <(MOD_LGUI|MOD_RGUI|MOD_LSFT|MOD_RSFT)>;
+            keep-mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
     };
 
     macros {
@@ -95,81 +114,146 @@
             label = "RGB_UG_STATUS";
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings
-                = <&rgb_ug RGB_STATUS>;
+            bindings = <&rgb_ug RGB_STATUS>;
+        };
+
+        /* ── 편집 매크로 ───────────────────────────────────────────────
+         * 날 Ctrl+Backspace 를 쓰지 않는 이유: PACS 리포트 필드는 표준 Win32 Edit 이라
+         * 제어문자(^H)를 삽입할 수 있다. 선택 후 Delete 로 우회한다.
+         * ⚠️ 워드랩이 켜져 있으면 ↑/↓ 가 논리 줄이 아니라 화면 줄로 움직인다.
+         */
+        wdel_b: wdel_b {            // 앞단어 삭제 : Ctrl+Shift+← → Del
+            label = "WDEL_B";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <12>;
+            tap-ms = <8>;
+            bindings = <&macro_press &kp LCTRL &kp LSHFT>
+                     , <&macro_tap &kp LEFT>
+                     , <&macro_release &kp LCTRL &kp LSHFT>
+                     , <&macro_tap &kp DEL>;
+        };
+
+        wdel_f: wdel_f {            // 뒤단어 삭제 : Ctrl+Shift+→ → Del
+            label = "WDEL_F";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <12>;
+            tap-ms = <8>;
+            bindings = <&macro_press &kp LCTRL &kp LSHFT>
+                     , <&macro_tap &kp RIGHT>
+                     , <&macro_release &kp LCTRL &kp LSHFT>
+                     , <&macro_tap &kp DEL>;
+        };
+
+        ldel_c: ldel_c {            // 현재행 삭제 : Home → Shift+↓ → Del
+            label = "LDEL_C";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <12>;
+            tap-ms = <8>;
+            bindings = <&macro_tap &kp HOME>
+                     , <&macro_press &kp LSHFT>
+                     , <&macro_tap &kp DOWN>
+                     , <&macro_release &kp LSHFT>
+                     , <&macro_tap &kp DEL>;
+        };
+
+        ldel_u: ldel_u {            // 윗행 삭제 : Home → Shift+↑ → Del
+            label = "LDEL_U";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <12>;
+            tap-ms = <8>;
+            bindings = <&macro_tap &kp HOME>
+                     , <&macro_press &kp LSHFT>
+                     , <&macro_tap &kp UP>
+                     , <&macro_release &kp LSHFT>
+                     , <&macro_tap &kp DEL>;
+        };
+
+        ldel_d: ldel_d {            // 아랫행 삭제 : End → Shift+↓ → Shift+End → Del
+            label = "LDEL_D";       //   Shift 를 놓지 않고 두 번 확장해야 선택이 유지된다
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <12>;
+            tap-ms = <8>;
+            bindings = <&macro_tap &kp END>
+                     , <&macro_press &kp LSHFT>
+                     , <&macro_tap &kp DOWN>
+                     , <&macro_tap &kp END>
+                     , <&macro_release &kp LSHFT>
+                     , <&macro_tap &kp DEL>;
         };
 
         bt_0: bt_profile_macro_0 {
             label = "BT_0";
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings
-                = <&out OUT_BLE>,
-                  <&bt BT_SEL 0>;
+            bindings = <&out OUT_BLE>, <&bt BT_SEL 0>;
         };
-
         bt_1: bt_profile_macro_1 {
             label = "BT_1";
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings
-                = <&out OUT_BLE>,
-                  <&bt BT_SEL 1>;
+            bindings = <&out OUT_BLE>, <&bt BT_SEL 1>;
         };
-
         bt_2: bt_profile_macro_2 {
             label = "BT_2";
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings
-                = <&out OUT_BLE>,
-                  <&bt BT_SEL 2>;
+            bindings = <&out OUT_BLE>, <&bt BT_SEL 2>;
         };
-
         bt_3: bt_profile_macro_3 {
             label = "BT_3";
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings
-                = <&out OUT_BLE>,
-                  <&bt BT_SEL 3>;
+            bindings = <&out OUT_BLE>, <&bt BT_SEL 3>;
         };
     };
 
     keymap {
         compatible = "zmk,keymap";
 
+        /* ── DEFAULT ──────────────────────────────────────────────────
+         * 외곽열 4행이 Iris CE 와 동일 :  Esc / Tab / Ctrl / Shift
+         *                                  -   /  \  /  '  / Shift
+         * 최하단 외곽행은 magic·Home·End·←·→·↑·↓ 만 유지 (나머지 3키 제거)
+         */
         default_layer {
-            // 공장 기본과의 차이는 엄지 6키뿐 (row5 좌 3 + 우 가운데 1, row6 좌 1 + 우 1)
             bindings = <
-            &kp F1         &kp F2   &kp F3      &kp F4      &kp F5                                                                                                          &kp F6  &kp F7      &kp F8      &kp F9      &kp F10
-            &kp EQUAL      &kp N1   &kp N2      &kp N3      &kp N4      &kp N5                                                                                      &kp N6  &kp N7  &kp N8      &kp N9      &kp N0      &kp MINUS
-            &kp TAB        &kp Q    &kp W       &kp E       &kp R       &kp T                                                                                       &kp Y   &kp U   &kp I       &kp O       &kp P       &kp BSLH
-            &kp ESC        &kp A    &kp S       &kp D       &kp F       &kp G                                                                                       &kp H   &kp J   &kp K       &kp L       &kp SEMI    &kp SQT
-            &kp GRAVE      &kp Z    &kp X       &kp C       &kp V       &kp B   &sht LSHFT LSHFT &vht LCTRL RBKT  &plt PACS LBKT   &kp LGUI  &vht LCTRL LA(D) &kp RSHFT &kp N   &kp M   &kp COMMA   &kp DOT     &kp FSLH    &kp PG_UP
-            &magic MAGIC 0 &kp HOME &kp END     &kp LEFT    &kp RIGHT           &kp BSPC         &kp LA(F)        &vht LALT LA(G)  &plt NAV RALT &kp RET &kp SPACE          &kp UP  &kp DOWN    &kp LBKT    &kp RBKT    &kp PG_DN
+            &kp F1         &kp F2    &kp F3    &kp F4     &kp F5                                                                                                &kp F6   &kp F7   &kp F8     &kp F9    &kp F10
+            &gresc         &kp N1    &kp N2    &kp N3     &kp N4    &kp N5                                                                              &kp N6   &kp N7   &kp N8   &kp N9     &kp N0    &kp MINUS
+            &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
+            &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
+            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &vht LALT F14   &kp RBKT   &none        &none    &kp RET   &vht LCTRL F13    &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RSHFT
+            &magic MAGIC 0 &kp HOME  &kp END   &kp LEFT   &kp RIGHT         &kp BSPC        &vht LGUI LBKT &kp F15   &none    &plt FN RALT &kp SPACE     &kp UP   &kp DOWN &none      &none     &none
             >;
         };
 
+
+        /* ── LOWER (FN + 왼엄지 안쪽으로 진입, 내부 &to DEFAULT 로 복귀) ──
+         * 미디어·넘패드·PrintScreen·Insert·Menu 등. 실사용 근거는 없으나 보존한다.
+         */
         lower_layer {
             bindings = <
-            &kp C_BRI_DN      &kp C_BRI_UP        &kp C_PREV      &kp C_NEXT      &kp C_PP                                                                                                           &kp C_MUTE   &kp C_VOL_DN &kp C_VOL_UP  &none           &kp PAUSE_BREAK
-            &trans            &none               &none           &none           &none           &kp HOME                                                                              &kp LPAR     &kp KP_NUM   &kp KP_EQUAL &kp KP_DIVIDE &kp KP_MULTIPLY &kp PSCRN
-            &trans            &none               &none           &kp UP          &none           &kp END                                                                               &kp RPAR     &kp KP_N7    &kp KP_N8    &kp KP_N9     &kp KP_MINUS    &kp SLCK
-            &trans            &none               &kp LEFT        &kp DOWN        &kp RIGHT       &kp PG_UP                                                                             &kp PRCNT    &kp KP_N4    &kp KP_N5    &kp KP_N6     &kp KP_PLUS     &none
-            &trans            &kp K_CMENU         &none           &kp F11         &kp F12         &kp PG_DN       &trans      &trans      &to DEFAULT &trans      &trans      &trans    &kp COMMA    &kp KP_N1    &kp KP_N2    &kp KP_N3     &kp KP_ENTER    &trans
-            &trans            &kp CAPS            &kp INS         &kp F11         &kp F12                         &trans      &trans      &trans      &trans      &trans      &trans                 &kp KP_N0    &kp KP_N0    &kp KP_DOT    &kp KP_ENTER    &trans
+            &kp C_BRI_DN   &kp C_BRI_UP  &kp C_PREV   &kp C_NEXT  &kp C_PP                                                                                       &kp C_MUTE  &kp C_VOL_DN &kp C_VOL_UP &none          &kp PAUSE_BREAK
+            &trans         &none         &none        &none       &none       &kp HOME                                                                &kp LPAR   &kp KP_NUM  &kp KP_EQUAL &kp KP_DIVIDE &kp KP_MULTIPLY &kp PSCRN
+            &trans         &none         &none        &kp UP      &none       &kp END                                                                 &kp RPAR   &kp KP_N7   &kp KP_N8    &kp KP_N9     &kp KP_MINUS   &kp SLCK
+            &trans         &none         &kp LEFT     &kp DOWN    &kp RIGHT   &kp PG_UP                                                               &kp PRCNT  &kp KP_N4   &kp KP_N5    &kp KP_N6     &kp KP_PLUS    &none
+            &trans         &kp K_CMENU   &none        &kp F11     &kp F12     &kp PG_DN   &trans  &trans  &to DEFAULT   &trans  &trans  &trans        &kp COMMA  &kp KP_N1   &kp KP_N2    &kp KP_N3     &kp KP_ENTER   &trans
+            &trans         &kp CAPS      &kp INS      &kp F11     &kp F12                 &trans  &trans  &trans        &trans  &trans  &trans                   &kp KP_N0   &kp KP_N0    &kp KP_DOT    &kp KP_ENTER   &trans
             >;
         };
 
         magic_layer {
             bindings = <
-            &bt BT_CLR        &none               &none           &none           &none                                                                                                           &none      &none      &none      &none      &bt BT_CLR_ALL
-            &none             &none               &none           &none           &none           &none                                                                                &none      &none      &none      &none      &none      &none
-            &none             &rgb_ug RGB_SPI     &rgb_ug RGB_SAI &rgb_ug RGB_HUI &rgb_ug RGB_BRI &rgb_ug RGB_TOG                                                                      &none      &none      &none      &none      &none      &none
-            &bootloader       &rgb_ug RGB_SPD     &rgb_ug RGB_SAD &rgb_ug RGB_HUD &rgb_ug RGB_BRD &rgb_ug RGB_EFF                                                                      &none      &none      &none      &none      &none      &bootloader
-            &sys_reset        &none               &none           &none           &none           &none           &bt_2     &bt_3     &none            &none     &none     &none       &none      &none      &none      &none      &none      &sys_reset
-            &none             &none               &none           &none           &none                           &bt_0     &bt_1     &out OUT_USB     &none     &none     &none                  &none      &none      &none      &none      &to FACTORY_TEST
+            &bt BT_CLR     &none            &none            &none            &none                                                                              &none   &none   &none   &none   &bt BT_CLR_ALL
+            &none          &none            &none            &none            &none            &none                                                    &none   &none   &none   &none   &none   &none
+            &none          &rgb_ug RGB_SPI  &rgb_ug RGB_SAI  &rgb_ug RGB_HUI  &rgb_ug RGB_BRI  &rgb_ug RGB_TOG                                          &none   &none   &none   &none   &none   &none
+            &bootloader    &rgb_ug RGB_SPD  &rgb_ug RGB_SAD  &rgb_ug RGB_HUD  &rgb_ug RGB_BRD  &rgb_ug RGB_EFF                                          &none   &none   &none   &none   &none   &bootloader
+            &sys_reset     &none            &none            &none            &none            &none    &bt_2  &bt_3  &none        &none  &none  &none   &none   &none   &none   &none   &none   &sys_reset
+            &none          &none            &none            &none            &none                     &bt_0  &bt_1  &out OUT_USB &none  &none  &none           &none   &none   &none   &none   &to FACTORY_TEST
             >;
         };
 
@@ -184,33 +268,23 @@
             >;
         };
 
-        // ── PACS층 (T3 hold) — 왼손 니모닉이 기존 AHK 핫키 그대로 방출 ─────────────
-        // Q=Alt+Tab W=Ctrl+W(위저드) E=Alt+E(차트) R=Alt+R(이전리포트) T=Alt+T
-        // A=Alt+A S=Alt+S D=Alt+D F=Alt+F G=Alt+G / Z=Ctrl+Alt+O X=Alt+Shift+E V=F12(Talon) B=Alt+B
-        // 1~3=F1~F3(오버레이 fast key 확인 — F1 13건/일 실측, 니모닉 "fast key n"=n; 2026-07-21 변경)
-        // 4~5=Alt+4/5(문구 삽입; 1~3 삽입은 물리 Alt+숫자 그대로) / 오른손 H,J,K,;=Alt+H/J/K/;
-        pacs_layer {
+        /* ── FN (오른엄지 한/영 hold) — 통합 레이어, 이거 하나뿐 ──────
+         * 왼손  숫자행 2 3 4 = 윗행/현재행/아랫행 삭제   ← 행 단위
+         *       W E R T      = Home PgDn PgUp End       ← 줄/페이지
+         *       S D F G      = ←  ↓  ↑  →               ← 문자 (A' 배열)
+         *       X C V B      = C+← 앞단어 뒤단어 C+→     ← 단어
+         *       A = Caps Word,  Z = CapsLock,  왼엄지 안쪽 = &to LOWER
+         * 오른손 숫자행 = F15 F16 F17 F18 F19,  '-' 자리 = '='
+         *       U I O P \ = F7 F8 F9 F10 F11 / J K L ; = F4 F5 F6 F12 / M , . = F1 F2 F3
+         */
+        fn_layer {
             bindings = <
-            &trans         &trans        &trans          &trans        &trans                                                                                                    &trans      &trans      &trans      &trans        &trans
-            &trans         &kp F1        &kp F2          &kp F3        &kp LA(N4)    &kp LA(N5)                                                                      &trans     &trans      &trans      &trans      &trans        &trans
-            &trans         &kp LA(TAB)   &kp LC(W)       &kp LA(E)     &kp LA(R)     &kp LA(T)                                                                       &trans     &trans      &trans      &trans      &trans        &trans
-            &trans         &kp LA(A)     &kp LA(S)       &kp LA(D)     &kp LA(F)     &kp LA(G)                                                                       &kp LA(H)  &kp LA(J)   &kp LA(K)   &trans      &kp LA(SEMI)  &trans
-            &trans         &kp LC(LA(O)) &kp LA(LS(E))   &trans        &kp F12       &kp LA(B)   &trans   &trans   &trans          &trans   &trans   &trans          &trans     &trans      &trans      &trans      &trans        &trans
-            &trans         &trans        &trans          &trans        &trans                    &trans   &trans   &trans          &trans   &trans   &trans                     &trans      &trans      &trans      &trans        &trans
-            >;
-        };
-
-        // ── Nav/Num층 (한/영 hold) — 오른손 JKL;=화살표, UIOP=Home/PgDn/PgUp/End, 왼손 숫자패드 ──
-        // 왼손: W,E,R=7,8,9 / S,D,F=4,5,6 / X,C,V=1,2,3 / G=0 (hotstring 접미 숫자용)
-        // Nav+T3 = &to LOWER (기본 LOWER층 진입 보존; 복귀는 LOWER 내 기존 &to DEFAULT)
-        nav_layer {
-            bindings = <
-            &trans         &trans        &trans          &trans        &trans                                                                                                    &trans      &trans      &trans      &trans        &trans
-            &trans         &trans        &trans          &trans        &trans        &trans                                                                          &trans     &trans      &trans      &trans      &trans        &trans
-            &trans         &trans        &kp N7          &kp N8        &kp N9        &trans                                                                          &trans     &kp HOME    &kp PG_DN   &kp PG_UP   &kp END       &trans
-            &trans         &caps_word    &kp N4          &kp N5        &kp N6        &kp N0                                                                          &trans     &kp LEFT    &kp DOWN    &kp UP      &kp RIGHT     &trans
-            &trans         &trans        &kp N1          &kp N2        &kp N3        &trans      &trans   &trans   &to LOWER       &trans   &trans   &trans          &trans     &trans      &trans      &trans      &trans        &trans
-            &trans         &trans        &trans          &trans        &trans                    &trans   &kp DEL  &trans          &trans   &trans   &trans                     &trans      &trans      &trans      &trans        &trans
+            &trans         &trans    &trans    &trans     &trans                                                                                                &trans   &trans   &trans     &trans    &trans
+            &trans         &trans    &ldel_u   &ldel_c    &ldel_d   &trans                                                                              &kp F15  &kp F16  &kp F17  &kp F18    &kp F19   &kp EQUAL
+            &trans         &trans    &kp HOME  &kp PG_DN  &kp PG_UP &kp END                                                                             &trans   &kp F7   &kp F8   &kp F9     &kp F10   &kp F11
+            &trans         &caps_word &kp LEFT &kp DOWN   &kp UP    &kp RIGHT                                                                           &trans   &kp F4   &kp F5   &kp F6     &kp F12   &trans
+            &trans         &kp CAPS  &kp LC(LEFT) &wdel_b &wdel_f   &kp LC(RIGHT) &trans      &trans     &to LOWER    &trans   &trans    &trans          &trans   &kp F1   &kp F2   &kp F3     &trans    &trans
+            &trans         &kp DEL   &trans    &trans     &trans            &trans            &trans     &trans       &trans   &trans    &trans          &trans   &trans   &trans     &trans    &trans
             >;
         };
     };
