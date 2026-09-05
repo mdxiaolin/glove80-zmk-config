@@ -9,7 +9,7 @@
  *  1. 외곽열 정렬 : row2 '=' → gresc(Esc) / row4 ESC → LCTRL
  *                   row5 GRAVE → sticky LShift / 오른쪽 row5 PG_UP → RSHFT
  *  2. 엄지 재배치 : 편의 순위대로 (아래 표)
- *  3. 물리 LGUI 제거 → '[' hold 가 담당
+ *  3. 물리 LGUI 제거 → 왼엄지 Super Alt-Tab 키의 hold 가 담당
  *  4. 최하단 외곽행 : magic·Home·End·←·→·↑·↓ 만 유지, [ ] PgDn 3키 제거(엄지/레이어와 중복)
  *  5. pacs_layer 폐지 — 거의 쓰지 않았고, Alt/Ctrl 조합은 전부 물리 모디파이어로 된다
  *  6. nav_layer → 통합 레이어(FN) 로 교체 : 왼손 이동+편집 / 오른손 F키 전부
@@ -19,7 +19,7 @@
  *  엄지 편의 순위 (Iris CE 와 동일한 동사·hold)
  *    1위 아랫줄 바깥(rest) : BSpc            /  Space
  *    2위 윗줄 바깥         : F14 hold=LAlt   /  F13 hold=LCtrl
- *    3위 아랫줄 중간       : '[' hold=LGui   /  한/영 hold=FN
+ *    3위 아랫줄 중간       : Super Alt-Tab hold=LGui / 한/영 hold=FN
  *    4위 윗줄 중간         : ']'             /  Enter
  *
  * ⚠️ F14=Alt+F(normal 확인), F15=Alt+G(이전복사+확인).
@@ -75,6 +75,18 @@
             bindings = <&kp>, <&kp>;
         };
 
+        // Win hold + Super Alt-Tab tap.
+        // tap은 Alt를 1초간 유지하므로 같은 키를 다시 눌러 창을 계속 순환할 수 있다.
+        sat_ht: super_alt_tab_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "SUPER_ALT_TAB_HOLD_TAP";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <180>;
+            quick-tap-ms = <0>;
+            bindings = <&kp>, <&sat>;
+        };
+
         // Shift hold + Sticky Shift tap (왼쪽 외곽열 row5)
         sht: sticky_shift_tap {
             compatible = "zmk,behavior-hold-tap";
@@ -110,6 +122,18 @@
     };
 
     macros {
+        sat: super_alt_tab {
+            label = "SUPER_ALT_TAB";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <20>;
+            bindings = <&macro_press &kp LALT>
+                     , <&macro_tap &kp TAB>
+                     , <&macro_wait_time 1000>
+                     , <&macro_release &kp LALT>;
+        };
+
         rgb_ug_status_macro: rgb_ug_status_macro_0 {
             label = "RGB_UG_STATUS";
             compatible = "zmk,behavior-macro";
@@ -226,7 +250,7 @@
             &gresc         &kp N1    &kp N2    &kp N3     &kp N4    &kp N5                                                                              &kp N6   &kp N7   &kp N8   &kp N9     &kp N0    &kp MINUS
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
             &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
-            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &kp RET         &vht LGUI LBKT &none    &none    &plt FN RALT &vht LCTRL F13    &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RSHFT
+            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &kp RET         &sat_ht LGUI 0  &none    &none    &plt FN RALT &vht LCTRL F13    &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RSHFT
             &magic MAGIC 0 &kp HOME  &kp END   &kp LEFT   &kp RIGHT         &kp BSPC        &vht LALT F14  &kp F15   &none    &vht RSHFT RBKT &kp SPACE     &kp UP   &kp DOWN &none      &none     &none
             >;
         };
