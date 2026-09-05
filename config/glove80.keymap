@@ -19,8 +19,8 @@
  *  엄지 편의 순위 (Iris CE 와 동일한 동사·hold)
  *    1위 아랫줄 바깥(rest) : BSpc            /  Space
  *    2위 윗줄 바깥         : F14 hold=LAlt   /  F13 hold=LCtrl
- *    3위 아랫줄 중간       : Super Alt-Tab hold=LGui / 한/영 hold=FN
- *    4위 윗줄 중간         : ']'             /  Enter
+ *    오른엄지 FN 자리      : ']' hold=FN
+ *    오른엄지 보조 Shift 자리: 한/영 hold=RShift
  *
  * ⚠️ F14=Alt+F(normal 확인), F15=Alt+G(이전복사+확인).
  *    뒤집어 넣으면 확인 대신 이전 리포트를 붙여넣고 저장한다. 되돌릴 수 없다.
@@ -98,8 +98,8 @@
             bindings = <&kp>, <&sk>;
         };
 
-        // 레이어 hold + 키 tap (한/영 → FN층)
-        // tap-preferred: 한/영 tap 직후 빠른 타이핑이 레이어로 오발동하지 않도록.
+        // 레이어 hold + 키 tap (] → FN층)
+        // tap-preferred: ] tap 직후 빠른 타이핑이 레이어로 오발동하지 않도록.
         plt: pacs_layer_tap {
             compatible = "zmk,behavior-hold-tap";
             label = "PACS_LAYER_TAP";
@@ -250,8 +250,8 @@
             &gresc         &kp N1    &kp N2    &kp N3     &kp N4    &kp N5                                                                              &kp N6   &kp N7   &kp N8   &kp N9     &kp N0    &kp MINUS
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
             &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
-            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &kp RET         &sat_ht LGUI 0  &none    &none    &plt FN RALT &vht LCTRL F13    &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RSHFT
-            &magic MAGIC 0 &kp HOME  &kp END   &kp LEFT   &kp RIGHT         &kp BSPC        &vht LALT F14  &kp F15   &none    &vht RSHFT RBKT &kp SPACE     &kp UP   &kp DOWN &none      &none     &none
+            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &kp RET         &sat_ht LGUI 0  &none    &none    &plt FN RBKT &vht LCTRL F13    &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RSHFT
+            &magic MAGIC 0 &kp HOME  &kp END   &kp LEFT   &kp RIGHT         &kp BSPC        &vht LALT F14  &kp F15   &none    &vht RSHFT RALT &kp SPACE     &kp UP   &kp DOWN &none      &none     &none
             >;
         };
 
@@ -292,7 +292,7 @@
             >;
         };
 
-        /* ── FN (오른엄지 한/영 hold) — 통합 레이어, 이거 하나뿐 ──────
+        /* ── FN (오른엄지 ] hold) — 통합 레이어, 이거 하나뿐 ─────────
          * 왼손  숫자행 2 3 4 = 윗행/현재행/아랫행 삭제   ← 행 단위
          *       W E R T      = Home PgDn PgUp End       ← 줄/페이지
          *       S D F G      = ←  ↓  ↑  →               ← 문자 (A' 배열)
