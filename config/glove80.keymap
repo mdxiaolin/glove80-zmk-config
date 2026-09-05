@@ -18,7 +18,8 @@
  *
  *  엄지 편의 순위 (Iris CE 와 동일한 동사·hold)
  *    1위 아랫줄 바깥(rest) : BSpc            /  Space
- *    2위 윗줄 바깥         : F14 hold=LAlt   /  F13 hold=LCtrl
+ *    왼 Enter              : Enter hold=LAlt
+ *    왼 F14                : 순수 F14 tap
  *    오른엄지 FN 자리      : ']' hold=FN
  *    오른엄지 보조 Shift 자리: 한/영 hold=RShift
  *
@@ -61,9 +62,9 @@
             bindings = <&mo>, <&rgb_ug_status_macro>;
         };
 
-        // 모디파이어 hold + 동사 tap (F13/F14/'[')
+        // 모디파이어 hold + 동사 tap (F13 및 한/영/RShift)
         // balanced: hold 중 다른 키가 눌렸다 떼지면 hold 판정 → 빠른 Ctrl+C / Alt+Tab 롤 보호.
-        // quick-tap 0: F13/F14 는 확정 키라 연타하지 않는다(2026-09-05 사용자 확인).
+        // quick-tap 0: F13 은 확정 키라 연타하지 않는다(2026-09-05 사용자 확인).
         //              자동반복을 끄면 hold 판정이 안정된다. cine 은 셔틀링이 담당.
         vht: verb_hold_tap {
             compatible = "zmk,behavior-hold-tap";
@@ -71,6 +72,18 @@
             #binding-cells = <2>;
             flavor = "balanced";
             tapping-term-ms = <180>;
+            quick-tap-ms = <0>;
+            bindings = <&kp>, <&kp>;
+        };
+
+        // Enter tap + Alt hold. Enter 뒤 즉시 문자가 이어지는 경우가 드물어
+        // 고빈도 Space/Backspace보다 dual-role 부담이 작다.
+        eht: enter_alt_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "ENTER_ALT_HOLD_TAP";
+            #binding-cells = <2>;
+            flavor = "balanced";
+            tapping-term-ms = <200>;
             quick-tap-ms = <0>;
             bindings = <&kp>, <&kp>;
         };
@@ -250,8 +263,8 @@
             &gresc         &kp N1    &kp N2    &kp N3     &kp N4    &kp N5                                                                              &kp N6   &kp N7   &kp N8   &kp N9     &kp N0    &kp MINUS
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
             &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
-            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &kp RET         &sat_ht LGUI 0  &none    &none    &plt FN RBKT &vht LCTRL F13    &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RSHFT
-            &magic MAGIC 0 &kp HOME  &kp END   &kp LEFT   &kp RIGHT         &kp BSPC        &vht LALT F14  &kp F15   &none    &vht RSHFT RALT &kp SPACE     &kp UP   &kp DOWN &none      &none     &none
+            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &eht LALT RET   &sat_ht LGUI 0  &none    &none    &plt FN RBKT &vht LCTRL F13    &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RSHFT
+            &magic MAGIC 0 &kp HOME  &kp END   &kp LEFT   &kp RIGHT         &kp BSPC        &kp F14        &kp F15   &none    &vht RSHFT RALT &kp SPACE     &kp UP   &kp DOWN &none      &none     &none
             >;
         };
 
