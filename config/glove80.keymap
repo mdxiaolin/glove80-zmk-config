@@ -305,7 +305,7 @@
             &gresc         &kp N1    &kp N2    &kp N3     &kp N4    &kp N5                                                                              &kp N6   &kp N7   &kp N8   &kp N9     &kp N0    &kp MINUS
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
             &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
-            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &eht LALT RET   &sat_ht LGUI 0  &none    &none    &vht RSHFT RALT &plt FN RBKT    &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RSHFT
+            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &plt FN RBKT    &sat_ht LGUI 0  &none    &none    &vht RSHFT RALT &eht LALT RET    &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RSHFT
             &magic MAGIC 0 &kp HOME  &kp END   &kp LEFT   &kp RIGHT         &kp BSPC        &kp F14        &kp F15   &none    &vht LCTRL F13 &kp SPACE     &kp UP   &kp DOWN &none      &none     &none
             >;
         };
