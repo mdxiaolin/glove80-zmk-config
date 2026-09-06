@@ -135,6 +135,28 @@
     };
 
     macros {
+        copy_once: copy_once {
+            label = "COPY_ONCE";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <10>;
+            bindings = <&macro_press &kp LCTRL>
+                     , <&macro_tap &kp C>
+                     , <&macro_release &kp LCTRL>;
+        };
+
+        paste_once: paste_once {
+            label = "PASTE_ONCE";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <10>;
+            bindings = <&macro_press &kp LCTRL>
+                     , <&macro_tap &kp V>
+                     , <&macro_release &kp LCTRL>;
+        };
+
         sat: super_alt_tab {
             label = "SUPER_ALT_TAB";
             compatible = "zmk,behavior-macro";
@@ -246,6 +268,26 @@
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
             bindings = <&out OUT_BLE>, <&bt BT_SEL 3>;
+        };
+    };
+
+    combos {
+        compatible = "zmk,combos";
+
+        combo_copy_xc {
+            timeout-ms = <40>;
+            require-prior-idle-ms = <120>;
+            key-positions = <48 49>;
+            layers = <DEFAULT>;
+            bindings = <&copy_once>;
+        };
+
+        combo_paste_cv {
+            timeout-ms = <40>;
+            require-prior-idle-ms = <120>;
+            key-positions = <49 50>;
+            layers = <DEFAULT>;
+            bindings = <&paste_once>;
         };
     };
 
