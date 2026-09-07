@@ -1,0 +1,18 @@
+# Copyright (c) 2026 Xiaolin Radiology
+# SPDX-License-Identifier: MIT
+
+description: Stateful Super Alt-Tab window cycle behavior
+compatible: "zmk,behavior-sat-window-cycle"
+include: zero_param.yaml
+
+properties:
+  bindings:
+    type: phandle-array
+    required: true
+  timeout-ms:
+    type: int
+    required: false
+    default: 1000
+  ignored-key-positions:
+    type: array
+    required: true

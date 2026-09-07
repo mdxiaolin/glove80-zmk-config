@@ -1,0 +1,7 @@
+name: zmk-behavior-sat-window-cycle
+
+build:
+  cmake: .
+  kconfig: Kconfig
+  settings:
+    dts_root: .

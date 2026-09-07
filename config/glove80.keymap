@@ -1,6 +1,7 @@
 /*
  * Glove80 PACS keymap v2 — DESKTOP-432SS3L (집, 온라인 PACS)
  * 2026-09-05.  기준 문서: pacs-dashboard/docs/IRIS_CE_LAYOUT.md
+ * Native SAT behavior dependency: zmk-extra/sat-window-cycle (wired in config/default.nix).
  *
  * ⚠️ 아직 플래시하지 않았다. 현행 파일은 glove80_pacs.keymap 이고 이 파일은 후보다.
  *    비교 후 교체할 것.
@@ -88,16 +89,29 @@
             bindings = <&kp>, <&kp>;
         };
 
-        // Win hold + Super Alt-Tab tap.
-        // tap은 Alt를 1초간 유지하므로 같은 키를 다시 눌러 창을 계속 순환할 수 있다.
+        // Win hold + native Super Alt-Tab tap.
+        // The behavior owns Alt, refreshes its 1000ms window on each tap, and
+        // cancels before another physical key is dispatched. Shift positions
+        // are ignored by the behavior so Shift+SAT sends reverse Alt+Tab.
         sat_ht: super_alt_tab_hold_tap {
             compatible = "zmk,behavior-hold-tap";
             label = "SUPER_ALT_TAB_HOLD_TAP";
             #binding-cells = <2>;
-            flavor = "balanced";
-            tapping-term-ms = <180>;
+            flavor = "hold-preferred";
+            tapping-term-ms = <280>;
             quick-tap-ms = <0>;
             bindings = <&kp>, <&sat>;
+        };
+
+        sat: super_alt_tab_window_cycle {
+            compatible = "zmk,behavior-sat-window-cycle";
+            label = "SUPER_ALT_TAB_WINDOW_CYCLE";
+            #binding-cells = <0>;
+            timeout-ms = <1000>;
+            // Glove80 row5 left/right Shift positions; keep them in the
+            // window so Shift+SAT can reverse the current Alt-Tab selection.
+            ignored-key-positions = <46 63>;
+            bindings = <&kp LALT>, <&kp TAB>;
         };
 
         // Shift hold + Sticky Shift tap (왼쪽 외곽열 row5)
@@ -155,18 +169,6 @@
             bindings = <&macro_press &kp LCTRL>
                      , <&macro_tap &kp V>
                      , <&macro_release &kp LCTRL>;
-        };
-
-        sat: super_alt_tab {
-            label = "SUPER_ALT_TAB";
-            compatible = "zmk,behavior-macro";
-            #binding-cells = <0>;
-            wait-ms = <0>;
-            tap-ms = <20>;
-            bindings = <&macro_press &kp LALT>
-                     , <&macro_tap &kp TAB>
-                     , <&macro_wait_time 1000>
-                     , <&macro_release &kp LALT>;
         };
 
         rgb_ug_status_macro: rgb_ug_status_macro_0 {
@@ -349,20 +351,21 @@
 
         /* ── FN (오른엄지 ] hold) — 통합 레이어, 이거 하나뿐 ─────────
          * 왼손  숫자행 2 3 4 = 윗행/현재행/아랫행 삭제   ← 행 단위
-         *       W E R T      = Home PgDn PgUp End       ← 줄/페이지
-         *       S D F G      = ←  ↓  ↑  →               ← 문자 (A' 배열)
-         *       X C V B      = C+← 앞단어 뒤단어 C+→     ← 단어
-         *       A = Caps Word,  Z = CapsLock,  왼엄지 안쪽 = &to LOWER
+         *       Q W E R      = Home PgDn PgUp End       ← 줄/페이지
+         *       A S D F      = ←  ↓  ↑  →               ← 문자 (ASDF 배열)
+         *       Z X C V      = C+← 앞단어 뒤단어 C+→     ← 단어
+         *       G = Caps Word,  B = CapsLock,  왼엄지 안쪽 = &to LOWER
          * 오른손 숫자행 = F15 F16 F17 F18 F19,  '-' 자리 = '='
          *       U I O P \ = F7 F8 F9 F10 F11 / J K L ; = F4 F5 F6 F12 / M , . = F1 F2 F3
+         * 시스템키: 1=Command Palette, Y=Task Manager, H=로컬 보안 화면, N=RDP 보안 화면
          */
         fn_layer {
             bindings = <
             &trans         &trans    &trans    &trans     &trans                                                                                                &trans   &trans   &trans     &trans    &trans
-            &trans         &trans    &ldel_u   &ldel_c    &ldel_d   &trans                                                                              &kp F15  &kp F16  &kp F17  &kp F18    &kp F19   &kp EQUAL
-            &trans         &kp LA(F4) &kp HOME &kp PG_DN  &kp PG_UP &kp END                                                                             &trans   &kp F7   &kp F8   &kp F9     &kp F10   &kp F11
-            &trans         &caps_word &kp LEFT &kp DOWN   &kp UP    &kp RIGHT                                                                           &trans   &kp F4   &kp F5   &kp F6     &kp F12   &trans
-            &trans         &kp CAPS  &kp LC(LEFT) &wdel_b &wdel_f   &kp LC(RIGHT) &trans      &trans     &to LOWER    &trans   &trans    &trans          &trans   &kp F1   &kp F2   &kp F3     &trans    &trans
+            &trans         &kp LG(LA(SPACE))    &ldel_u   &ldel_c    &ldel_d   &kp LBKT                                                                              &kp F15  &kp F16  &kp F17  &kp F18    &kp F19   &kp EQUAL
+            &trans         &kp HOME &kp PG_DN &kp PG_UP &kp END &kp LA(F4)                                                                             &kp LC(LS(ESC))   &kp F7   &kp F8   &kp F9     &kp F10   &kp F11
+            &trans         &kp LEFT &kp DOWN &kp UP &kp RIGHT &caps_word                                                                           &kp LC(LA(DEL))   &kp F4   &kp F5   &kp F6     &kp F12   &trans
+            &trans         &kp LC(LEFT) &wdel_b &wdel_f &kp LC(RIGHT) &kp CAPS &trans      &trans     &to LOWER    &trans   &trans    &trans          &kp LC(LA(END))   &kp F1   &kp F2   &kp F3     &trans    &trans
             &trans         &kp DEL   &trans    &trans     &trans            &trans            &trans     &trans       &trans   &trans    &trans          &trans   &trans   &trans     &trans    &trans
             >;
         };
