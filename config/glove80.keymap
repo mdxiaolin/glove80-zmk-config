@@ -207,7 +207,7 @@
                      , <&macro_tap &kp DEL>;
         };
 
-        ldel_c: ldel_c {            // 현재행 삭제 : Home → Shift+↓ → Del
+        ldel_c: ldel_c {            // 현재행 삭제 : Home → Shift+End → Del
             label = "LDEL_C";
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
@@ -215,7 +215,7 @@
             tap-ms = <8>;
             bindings = <&macro_tap &kp HOME>
                      , <&macro_press &kp LSHFT>
-                     , <&macro_tap &kp DOWN>
+                     , <&macro_tap &kp END>
                      , <&macro_release &kp LSHFT>
                      , <&macro_tap &kp DEL>;
         };
