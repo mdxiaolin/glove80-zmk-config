@@ -356,16 +356,18 @@
          *       Z X C V      = C+← 앞단어 뒤단어 C+→     ← 단어
          *       G = Caps Word,  B = CapsLock,  왼엄지 안쪽 = &to LOWER
          * 오른손 숫자행 = F15 F16 F17 F18 F19,  '-' 자리 = '='
-         *       U I O P \ = F7 F8 F9 F10 F11 / J K L ; = F4 F5 F6 F12 / M , . = F1 F2 F3
+         *       U I O P   = F1 F2 F3 F4; \ = base backslash
+         *       J K L ;   = F5 F6 F7 F8
+         *       M , . /   = F9 F10 F11 F12
          * 시스템키: 1=Command Palette, Y=Task Manager, H=로컬 보안 화면, N=RDP 보안 화면
          */
         fn_layer {
             bindings = <
             &trans         &trans    &trans    &trans     &trans                                                                                                &trans   &trans   &trans     &trans    &trans
             &trans         &kp LG(LA(SPACE))    &ldel_u   &ldel_c    &ldel_d   &kp LBKT                                                                              &kp F15  &kp F16  &kp F17  &kp F18    &kp F19   &kp EQUAL
-            &trans         &kp HOME &kp PG_DN &kp PG_UP &kp END &kp LA(F4)                                                                             &kp LC(LS(ESC))   &kp F7   &kp F8   &kp F9     &kp F10   &kp F11
-            &trans         &kp LEFT &kp DOWN &kp UP &kp RIGHT &caps_word                                                                           &kp LC(LA(DEL))   &kp F4   &kp F5   &kp F6     &kp F12   &trans
-            &trans         &kp LC(LEFT) &wdel_b &wdel_f &kp LC(RIGHT) &kp CAPS &trans      &trans     &to LOWER    &trans   &trans    &trans          &kp LC(LA(END))   &kp F1   &kp F2   &kp F3     &trans    &trans
+            &trans         &kp HOME &kp PG_DN &kp PG_UP &kp END &kp LA(F4)                                                                             &kp LC(LS(ESC))   &kp F1   &kp F2   &kp F3     &kp F4     &trans
+            &trans         &kp LEFT &kp DOWN &kp UP &kp RIGHT &caps_word                                                                           &kp LC(LA(DEL))   &kp F5   &kp F6   &kp F7     &kp F8     &trans
+            &trans         &kp LC(LEFT) &wdel_b &wdel_f &kp LC(RIGHT) &kp CAPS &trans      &trans     &to LOWER    &trans   &trans    &trans          &kp LC(LA(END))   &kp F9   &kp F10  &kp F11  &kp F12    &trans
             &trans         &kp DEL   &trans    &trans     &trans            &trans            &trans     &trans       &trans   &trans    &trans          &trans   &trans   &trans     &trans    &trans
             >;
         };
