@@ -37,6 +37,10 @@
 
 #define HYPER LC(LS(LG(LALT)))
 
+/* 2026-09-18 user-approved home-row Enter trial:
+ * right home-row outer = Enter, right bottom-row outer = quote,
+ * right rank-2 thumb = pure RAlt; Space/FN, F13/Ctrl, and Han/RShift stay unchanged. */
+
 // layers
 #define DEFAULT 0
 #define LOWER 1
@@ -108,9 +112,10 @@
             label = "SUPER_ALT_TAB_WINDOW_CYCLE";
             #binding-cells = <0>;
             timeout-ms = <1000>;
-            // Glove80 row5 left/right Shift positions; keep them in the
-            // window so Shift+SAT can reverse the current Alt-Tab selection.
-            ignored-key-positions = <46 63>;
+            // Binding 46 is left sticky Shift; binding 56 is the surviving
+            // right Han/RShift thumb. Keep both so Shift+SAT can reverse;
+            // the new right quote at binding 63 must cancel/release SAT.
+            ignored-key-positions = <46 56>;
             bindings = <&kp LALT>, <&kp TAB>;
         };
 
@@ -306,8 +311,8 @@
             &kp F1         &kp F2    &kp F3    &kp F4     &kp F5                                                                                                &kp F6   &kp F7   &kp F8     &kp F9    &kp F10
             &gresc         &kp N1    &kp N2    &kp N3     &kp N4    &kp N5                                                                              &kp N6   &kp N7   &kp N8   &kp N9     &kp N0    &kp MINUS
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
-            &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
-            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &eht LALT RBKT  &sat_ht LGUI 0  &none    &none    &vht RSHFT RALT &kp RET    &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RSHFT
+            &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp RET
+            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &eht LALT RBKT  &sat_ht LGUI 0  &none    &none    &vht RSHFT RALT &kp RALT   &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp SQT
             &magic MAGIC 0 &kp HOME  &kp END   &kp LEFT   &kp RIGHT         &kp BSPC        &kp F14        &kp F15   &none    &vht LCTRL F13 &plt FN SPACE     &kp UP   &kp DOWN &none      &none     &none
             >;
         };
