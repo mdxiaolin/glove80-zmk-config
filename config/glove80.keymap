@@ -23,9 +23,11 @@
  *    왼 F14                : 순수 F14 tap
  *    오른엄지 FN 자리      : ']' hold=FN
  *    오른엄지 보조 Shift 자리: Enter tap / RShift hold
+ *    왼쪽 아래 안쪽 엄지   : Mic hold=Ctrl+H (release releases)
  *
- * ⚠️ F14=Alt+F(normal 확인), F15=Alt+G(이전복사+확인).
- *    뒤집어 넣으면 확인 대신 이전 리포트를 붙여넣고 저장한다. 되돌릴 수 없다.
+ * ⚠️ F14=Alt+F(normal 확인). BASE index 71 is Mic: a physical press
+ *    holds Ctrl+H and release releases; it is a direct key, not a tap
+ *    macro or mod-tap. FN F15 remains on its existing numeric-row binding.
  */
 
 #include <behaviors.dtsi>
@@ -43,10 +45,11 @@
  *                       55=Screenshot (Win+Shift+S), 56=pure LCtrl,
  *                       57=Enter tap/RShift hold.
  *   row-5 left body 64..68: MAGIC, Home, Left, Right, F14;
- *   row-5 left thumb 69..71: BSpc, ] tap/LAlt hold, F15;
+ *   row-5 left thumb 69..71: BSpc, ] tap/LAlt hold, Mic hold Ctrl+H;
  *   row-5 right thumb 72..74: LBKT, pure RAlt (Han/AltGr), Space tap/FN hold;
  *   row-5 right body 75..79: F13, Up, Down, End, Enter.
- * F13 and F15 are pure BASE keys; F15 also remains on FN.
+ * F13 is a pure BASE key; index 71 is a direct Mic Ctrl+H key whose release
+ * releases the chord; FN F15 remains unchanged on its numeric-row binding.
  * Moved positions keep transparent FN bindings, except index 54's intentional
  * &to LOWER entry. SAT reverse ignores old sticky Shift 46, pure LShift 53,
  * and Enter/RShift 57.
@@ -324,7 +327,7 @@
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
             &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
             &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &sat_ht LGUI 0  &kp LSHFT  &kp LG(LA(SPACE))    &kp LG(LS(S))    &kp LCTRL    &vht RSHFT RET   &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RET
-            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &kp BSPC        &eht LALT RBKT &kp F15   &kp LBKT    &kp RALT      &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
+            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &kp BSPC        &eht LALT RBKT &kp LC(H) &kp LBKT    &kp RALT      &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
             >;
         };
 
