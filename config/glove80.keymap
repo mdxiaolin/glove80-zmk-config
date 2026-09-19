@@ -37,21 +37,18 @@
 
 #define HYPER LC(LS(LG(LALT)))
 
-/* 2026-09-18 user-approved home-row Enter trial:
- * right home-row outer = Enter, right bottom-row outer = quote,
- * right rank-2 thumb = pure RAlt; Space/FN, F13/Ctrl, and [/RShift stay unchanged. */
-
-/* 2026-09-19 user correction: swap the right outer quote and Enter keys:
- * right home-row outer (binding 45) = SQT, right bottom-row outer (binding 63) = RET.
- * The right rank-2 thumb remains pure RAlt; rank-4 binding 56 = LBKT tap /
- * RSHFT hold.  MAGIC and FN remain unchanged.
- * SAT ignored positions remain 46 and 56, so both active outer keys are nonignored. */
-
-/* 2026-09-19 follow-up: duplicate Enter at the right rank-4 thumb:
- * binding 56 = RET tap / RSHFT hold; right bottom-row outer binding 63
- * remains pure RET.  Right home-row outer binding 45 remains SQT; rank-2
- * RAlt, rank-3 F13/Ctrl, Space/FN, left thumbs, FN+5 [, FN+boot positions,
- * MAGIC/FN, and SAT ignored positions 46/56 remain unchanged. */
+/* 2026-09-19 user-approved Glove80 final BASE layout (flattened LAYOUT indices):
+ *   row-4 thumb upper: 52=SAT/Win (&sat_ht), 53=pure LShift, 54=none;
+ *                       55=none, 56=pure LCtrl, 57=Enter tap/RShift hold.
+ *   row-5 left body 64..68: MAGIC, Home, Left, Right, F14;
+ *   row-5 left thumb 69..71: BSpc, ] tap/LAlt hold, none;
+ *   row-5 right thumb 72..74: none, pure RAlt (Han/AltGr), Space tap/FN hold;
+ *   row-5 right body 75..79: F13, Up, Down, End, Enter.
+ * F13 is pure (&kp F13); F15 is removed from BASE but remains on FN.
+ * Moved positions keep transparent FN bindings, except index 54's intentional
+ * &to LOWER entry. SAT reverse ignores old sticky Shift 46, pure LShift 53,
+ * and Enter/RShift 57.
+ */
 
 // layers
 #define DEFAULT 0
@@ -79,7 +76,7 @@
             bindings = <&mo>, <&rgb_ug_status_macro>;
         };
 
-        // 모디파이어 hold + 동사 tap (F13 및 한/영/RShift)
+        // 모디파이어 hold + Enter tap / RShift hold (F13은 BASE에서 순수 키)
         // balanced: hold 중 다른 키가 눌렸다 떼지면 hold 판정 → 빠른 Ctrl+C / Alt+Tab 롤 보호.
         // quick-tap 0: F13 은 확정 키라 연타하지 않는다(2026-09-05 사용자 확인).
         //              자동반복을 끄면 hold 판정이 안정된다. cine 은 셔틀링이 담당.
@@ -124,10 +121,10 @@
             label = "SUPER_ALT_TAB_WINDOW_CYCLE";
             #binding-cells = <0>;
             timeout-ms = <1000>;
-            // Binding 46 is left sticky Shift; binding 56 is the surviving
-            // right Enter/RShift thumb. Keep both so Shift+SAT can reverse;
-            // quote at binding 45 and Enter at binding 63 must cancel/release SAT.
-            ignored-key-positions = <46 56>;
+            // Keep every physical Shift path ignored so Shift+SAT reverses:
+            // old sticky Shift 46, pure left Shift 53, and Enter/RShift 57.
+            // Non-Shift keys still cancel/release SAT when they are dispatched.
+            ignored-key-positions = <46 53 57>;
             bindings = <&kp LALT>, <&kp TAB>;
         };
 
@@ -316,7 +313,7 @@
         /* ── DEFAULT ──────────────────────────────────────────────────
          * 외곽열 4행이 Iris CE 와 동일 :  Esc / Tab / Ctrl / Shift
          *                                  -   /  \  /  quote  /  Enter
-         * 최하단 외곽행은 magic·Home·End·←·→·↑·↓ 만 유지 (나머지 3키 제거)
+         * 최하단 외곽행은 magic·Home·←·→·F14 / F13·↑·↓·End·Enter
          */
         default_layer {
             bindings = <
@@ -324,8 +321,8 @@
             &gresc         &kp N1    &kp N2    &kp N3     &kp N4    &kp N5                                                                              &kp N6   &kp N7   &kp N8   &kp N9     &kp N0    &kp MINUS
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
             &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
-            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &eht LALT RBKT  &sat_ht LGUI 0  &none    &none    &vht RSHFT RET &kp RALT   &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RET
-            &magic MAGIC 0 &kp HOME  &kp END   &kp LEFT   &kp RIGHT         &kp BSPC        &kp F14        &kp F15   &none    &vht LCTRL F13 &plt FN SPACE     &kp UP   &kp DOWN &none      &none     &none
+            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &sat_ht LGUI 0  &kp LSHFT  &none    &none    &kp LCTRL    &vht RSHFT RET   &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RET
+            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &kp BSPC        &eht LALT RBKT &none   &none    &kp RALT      &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
             >;
         };
 
