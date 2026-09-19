@@ -22,7 +22,7 @@
  *    왼 Enter              : Enter hold=LAlt
  *    왼 F14                : 순수 F14 tap
  *    오른엄지 FN 자리      : ']' hold=FN
- *    오른엄지 보조 Shift 자리: 한/영 hold=RShift
+ *    오른엄지 보조 Shift 자리: Enter tap / RShift hold
  *
  * ⚠️ F14=Alt+F(normal 확인), F15=Alt+G(이전복사+확인).
  *    뒤집어 넣으면 확인 대신 이전 리포트를 붙여넣고 저장한다. 되돌릴 수 없다.
@@ -46,6 +46,12 @@
  * The right rank-2 thumb remains pure RAlt; rank-4 binding 56 = LBKT tap /
  * RSHFT hold.  MAGIC and FN remain unchanged.
  * SAT ignored positions remain 46 and 56, so both active outer keys are nonignored. */
+
+/* 2026-09-19 follow-up: duplicate Enter at the right rank-4 thumb:
+ * binding 56 = RET tap / RSHFT hold; right bottom-row outer binding 63
+ * remains pure RET.  Right home-row outer binding 45 remains SQT; rank-2
+ * RAlt, rank-3 F13/Ctrl, Space/FN, left thumbs, FN+5 [, FN+boot positions,
+ * MAGIC/FN, and SAT ignored positions 46/56 remain unchanged. */
 
 // layers
 #define DEFAULT 0
@@ -119,7 +125,7 @@
             #binding-cells = <0>;
             timeout-ms = <1000>;
             // Binding 46 is left sticky Shift; binding 56 is the surviving
-            // right [/RShift thumb. Keep both so Shift+SAT can reverse;
+            // right Enter/RShift thumb. Keep both so Shift+SAT can reverse;
             // quote at binding 45 and Enter at binding 63 must cancel/release SAT.
             ignored-key-positions = <46 56>;
             bindings = <&kp LALT>, <&kp TAB>;
@@ -318,7 +324,7 @@
             &gresc         &kp N1    &kp N2    &kp N3     &kp N4    &kp N5                                                                              &kp N6   &kp N7   &kp N8   &kp N9     &kp N0    &kp MINUS
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
             &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
-            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &eht LALT RBKT  &sat_ht LGUI 0  &none    &none    &vht RSHFT LBKT &kp RALT   &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RET
+            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &eht LALT RBKT  &sat_ht LGUI 0  &none    &none    &vht RSHFT RET &kp RALT   &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RET
             &magic MAGIC 0 &kp HOME  &kp END   &kp LEFT   &kp RIGHT         &kp BSPC        &kp F14        &kp F15   &none    &vht LCTRL F13 &plt FN SPACE     &kp UP   &kp DOWN &none      &none     &none
             >;
         };
