@@ -38,13 +38,15 @@
 #define HYPER LC(LS(LG(LALT)))
 
 /* 2026-09-19 user-approved Glove80 final BASE layout (flattened LAYOUT indices):
- *   row-4 thumb upper: 52=SAT/Win (&sat_ht), 53=pure LShift, 54=none;
- *                       55=none, 56=pure LCtrl, 57=Enter tap/RShift hold.
+ *   row-4 thumb upper: 52=SAT/Win (&sat_ht), 53=pure LShift,
+ *                       54=Command Palette (Win+Alt+Space);
+ *                       55=Screenshot (Win+Shift+S), 56=pure LCtrl,
+ *                       57=Enter tap/RShift hold.
  *   row-5 left body 64..68: MAGIC, Home, Left, Right, F14;
- *   row-5 left thumb 69..71: BSpc, ] tap/LAlt hold, none;
- *   row-5 right thumb 72..74: none, pure RAlt (Han/AltGr), Space tap/FN hold;
+ *   row-5 left thumb 69..71: BSpc, ] tap/LAlt hold, F15;
+ *   row-5 right thumb 72..74: LBKT, pure RAlt (Han/AltGr), Space tap/FN hold;
  *   row-5 right body 75..79: F13, Up, Down, End, Enter.
- * F13 is pure (&kp F13); F15 is removed from BASE but remains on FN.
+ * F13 and F15 are pure BASE keys; F15 also remains on FN.
  * Moved positions keep transparent FN bindings, except index 54's intentional
  * &to LOWER entry. SAT reverse ignores old sticky Shift 46, pure LShift 53,
  * and Enter/RShift 57.
@@ -321,8 +323,8 @@
             &gresc         &kp N1    &kp N2    &kp N3     &kp N4    &kp N5                                                                              &kp N6   &kp N7   &kp N8   &kp N9     &kp N0    &kp MINUS
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
             &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
-            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &sat_ht LGUI 0  &kp LSHFT  &none    &none    &kp LCTRL    &vht RSHFT RET   &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RET
-            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &kp BSPC        &eht LALT RBKT &none   &none    &kp RALT      &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
+            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &sat_ht LGUI 0  &kp LSHFT  &kp LG(LA(SPACE))    &kp LG(LS(S))    &kp LCTRL    &vht RSHFT RET   &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RET
+            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &kp BSPC        &eht LALT RBKT &kp F15   &kp LBKT    &kp RALT      &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
             >;
         };
 
