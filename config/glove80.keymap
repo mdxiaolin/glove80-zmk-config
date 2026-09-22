@@ -46,7 +46,7 @@
  *                       57=Enter tap/RShift hold.
  *   row-5 left body 64..68: MAGIC, Home, Left, Right, F14;
  *   row-5 left thumb 69..71: BSpc, ] tap/LAlt hold, Mic hold Ctrl+H;
- *   row-5 right thumb 72..74: LBKT, pure RAlt (Han/AltGr), Space tap/FN hold;
+ *   row-5 right thumb 72..74: LBKT, RAlt tap / NUM hold (Han/AltGr), Space tap/FN hold;
  *   row-5 right body 75..79: F13, Up, Down, End, Enter.
  * F13 is a pure BASE key; index 71 is a direct Mic Ctrl+H key whose release
  * releases the chord; FN F19 remains unchanged on its numeric-row binding.
@@ -61,6 +61,7 @@
 #define MAGIC 2
 #define FACTORY_TEST 3
 #define FN 4
+#define NUM 5
 
 / {
     behaviors {
@@ -150,6 +151,17 @@
         plt: pacs_layer_tap {
             compatible = "zmk,behavior-hold-tap";
             label = "PACS_LAYER_TAP";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <220>;
+            quick-tap-ms = <0>;
+            bindings = <&mo>, <&kp>;
+        };
+
+        // Han tap + NUM hold (오른엄지 rank-2). tap-preferred 220ms, quick-tap 0.
+        num_ht: num_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "NUM_HOLD_TAP";
             #binding-cells = <2>;
             flavor = "tap-preferred";
             tapping-term-ms = <220>;
@@ -371,7 +383,7 @@
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
             &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
             &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &sat_ht LGUI 0  &kp LSHFT  &kp LG(LA(SPACE))    &kp LG(LS(S))    &kp LCTRL    &vht RSHFT RET   &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RET
-            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &kp BSPC        &eht LALT RBKT &kp LC(H) &kp LBKT    &kp RALT      &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
+            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &kp BSPC        &eht LALT RBKT &kp LC(H) &kp LBKT    &num_ht NUM RALT &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
             >;
         };
 
@@ -412,7 +424,7 @@
             >;
         };
 
-        /* ── FN (오른엄지 Space hold) — 통합 레이어, 이거 하나뿐 ─────
+        /* ── FN (오른엄지 Space hold) — 통합 레이어 (NUM은 별도) ─────
          * 왼손  숫자행 2 3 4 = 윗행/현재행/아랫행 삭제   ← 행 단위
          *       Q W E R      = Home PgDn PgUp End       ← 줄/페이지
          *       A S D F      = ←  ↓  ↑  →               ← 문자 (ASDF 배열)
@@ -420,19 +432,35 @@
          *       G = Win+Shift+←, B = Win+Shift+→, Enter = CapsLock, 왼엄지 안쪽 = &to LOWER
          *       Tab = Screenshot (Win+Shift+S)
          * 오른손 숫자행 = 6=Ctrl+Home 7=Ctrl+End 8=End→Enter 9=Ctrl+End→Enter 0=F19, '-' = '='
-         *       U I O P   = F1 F2 F3 F4; \ = Caps Word
-         *       J K L ;   = F5 F6 F7 F8
-         *       M , . /   = F9 F10 F11 F12
+         * 오른손 F키 = NUM 넘패드와 같은 방향:
+         *       U I O P = F7 F8 F9 F10; J K L ; = F4 F5 F6 F11; M , . / = F1 F2 F3 F12; \ = Caps Word
          * 시스템키: 1=Command Palette, Y=Task Manager, H=로컬 보안 화면, N=RDP 보안 화면
          */
         fn_layer {
             bindings = <
             &trans         &trans    &trans    &trans     &trans                                                                                                &trans   &trans   &trans     &trans    &trans
             &trans         &kp LG(LA(SPACE))    &ldel_u   &ldel_c    &ldel_d   &kp LBKT                                                                              &kp LC(HOME)  &kp LC(END)  &end_enter  &cend_enter    &kp F19   &kp EQUAL
-            &kp LG(LS(S))  &kp HOME &kp PG_DN &kp PG_UP &kp END &kp LA(F4)                                                                             &kp LC(LS(ESC))   &kp F1   &kp F2   &kp F3     &kp F4     &caps_word
-            &trans         &kp LEFT &kp DOWN &kp UP &kp RIGHT &kp LG(LS(LEFT))                                                                           &kp LC(LA(DEL))   &kp F5   &kp F6   &kp F7     &kp F8     &trans
-            &trans         &kp LC(LEFT) &wdel_b &wdel_f &kp LC(RIGHT) &kp LG(LS(RIGHT)) &trans      &trans     &to LOWER    &trans   &trans    &trans          &kp LC(LA(END))   &kp F9   &kp F10  &kp F11  &kp F12    &kp CAPS
+            &kp LG(LS(S))  &kp HOME &kp PG_DN &kp PG_UP &kp END &kp LA(F4)                                                                             &kp LC(LS(ESC))   &kp F7   &kp F8   &kp F9     &kp F10    &caps_word
+            &trans         &kp LEFT &kp DOWN &kp UP &kp RIGHT &kp LG(LS(LEFT))                                                                           &kp LC(LA(DEL))   &kp F4   &kp F5   &kp F6     &kp F11    &trans
+            &trans         &kp LC(LEFT) &wdel_b &wdel_f &kp LC(RIGHT) &kp LG(LS(RIGHT)) &trans      &trans     &to LOWER    &trans   &trans    &trans          &kp LC(LA(END))   &kp F1   &kp F2   &kp F3     &kp F12    &kp CAPS
             &trans         &kp DEL   &trans    &trans     &trans            &wdel_b     &kp F20     &trans       &trans   &trans    &trans          &trans   &trans   &trans     &trans    &trans
+            >;
+        };
+
+        /* ── NUM (오른엄지 Han/RAlt hold) ─────────────────────────────
+         * 오른손 넘패드: U I O = 7 8 9, J K L = 4 5 6, M , . = 1 2 3,
+         * N = 0, / = '.', P = '-'.
+         * 나머지 칸은 DEFAULT 바인딩을 명시 복사해 FN+NUM 동시 눌림에서도
+         * FN 삭제/부팅/확인 단축키가 새지 않게 한다. Han/Space 트리거 유지.
+         */
+        num_layer {
+            bindings = <
+            &kp F1         &kp F2    &kp F3    &kp F4     &kp F5                                                                                                &kp F6   &kp F7   &kp F8     &kp F9    &kp F10
+            &gresc         &kp N1    &kp N2    &kp N3     &kp N4    &kp N5                                                                              &kp N6   &kp N7   &kp N8   &kp N9     &kp N0    &kp MINUS
+            &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp N7   &kp N8   &kp N9     &kp MINUS &kp BSLH
+            &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp N4   &kp N5   &kp N6     &kp SEMI  &kp SQT
+            &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &sat_ht LGUI 0  &kp LSHFT  &kp LG(LA(SPACE))    &kp LG(LS(S))    &kp LCTRL    &vht RSHFT RET   &kp N0   &kp N1   &kp N2   &kp N3    &kp DOT   &kp RET
+            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &kp BSPC        &eht LALT RBKT &kp LC(H) &kp LBKT    &num_ht NUM RALT &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
             >;
         };
     };
