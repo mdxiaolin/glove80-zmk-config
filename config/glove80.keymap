@@ -45,7 +45,7 @@
  *                       55=Screenshot (Win+Shift+S), 56=pure LCtrl,
  *                       57=Enter tap/RShift hold.
  *   row-5 left body 64..68: MAGIC, Home, Left, Right, F14;
- *   row-5 left thumb 69..71: BSpc tap/LAlt hold, ] pure tap, Mic hold Ctrl+H;
+ *   row-5 left thumb 69..71: BSpc, ] tap/LAlt hold, Mic hold Ctrl+H;
  *   row-5 right thumb 72..74: LBKT, pure RAlt (Han/AltGr), Space tap/FN hold;
  *   row-5 right body 75..79: F13, Up, Down, End, Enter.
  * F13 is a pure BASE key; index 71 is a direct Mic Ctrl+H key whose release
@@ -103,18 +103,6 @@
             #binding-cells = <2>;
             flavor = "balanced";
             tapping-term-ms = <200>;
-            quick-tap-ms = <0>;
-            bindings = <&kp>, <&kp>;
-        };
-
-        // Backspace tap + Alt hold (왼엄지 rest). tap-preferred 220ms, quick-tap 0.
-        // QMK TH_BSPC_ALT와 동일 동작; ]는 순수 tap으로 분리한다.
-        bht: backspace_alt_hold_tap {
-            compatible = "zmk,behavior-hold-tap";
-            label = "BACKSPACE_ALT_HOLD_TAP";
-            #binding-cells = <2>;
-            flavor = "tap-preferred";
-            tapping-term-ms = <220>;
             quick-tap-ms = <0>;
             bindings = <&kp>, <&kp>;
         };
@@ -383,7 +371,7 @@
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
             &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
             &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &sat_ht LGUI 0  &kp LSHFT  &kp LG(LA(SPACE))    &kp LG(LS(S))    &kp LCTRL    &vht RSHFT RET   &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RET
-            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &bht LALT BSPC   &kp RBKT &kp LC(H) &kp LBKT    &kp RALT      &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
+            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &kp BSPC        &eht LALT RBKT &kp LC(H) &kp LBKT    &kp RALT      &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
             >;
         };
 
