@@ -21,13 +21,13 @@
  *    1위 아랫줄 바깥(rest) : BSpc            /  Space
  *    왼 Enter              : Enter hold=LAlt
  *    왼 F14                : 순수 F14 tap
- *    오른엄지 FN 자리      : ']' hold=FN
+ *    오른엄지 FN 자리      : Space hold=FN
  *    오른엄지 보조 Shift 자리: Enter tap / RShift hold
  *    왼쪽 아래 안쪽 엄지   : Mic hold=Ctrl+H (release releases)
  *
  * ⚠️ F14=Alt+F(normal 확인). BASE index 71 is Mic: a physical press
  *    holds Ctrl+H and release releases; it is a direct key, not a tap
- *    macro or mod-tap. FN F15 remains on its existing numeric-row binding.
+ *    macro or mod-tap. FN F19 remains on its existing numeric-row binding.
  */
 
 #include <behaviors.dtsi>
@@ -45,11 +45,11 @@
  *                       55=Screenshot (Win+Shift+S), 56=pure LCtrl,
  *                       57=Enter tap/RShift hold.
  *   row-5 left body 64..68: MAGIC, Home, Left, Right, F14;
- *   row-5 left thumb 69..71: BSpc, ] tap/LAlt hold, Mic hold Ctrl+H;
+ *   row-5 left thumb 69..71: BSpc tap/LAlt hold, ] pure tap, Mic hold Ctrl+H;
  *   row-5 right thumb 72..74: LBKT, pure RAlt (Han/AltGr), Space tap/FN hold;
  *   row-5 right body 75..79: F13, Up, Down, End, Enter.
  * F13 is a pure BASE key; index 71 is a direct Mic Ctrl+H key whose release
- * releases the chord; FN F15 remains unchanged on its numeric-row binding.
+ * releases the chord; FN F19 remains unchanged on its numeric-row binding.
  * Moved positions keep transparent FN bindings, except index 54's intentional
  * &to LOWER entry. SAT reverse ignores old sticky Shift 46, pure LShift 53,
  * and Enter/RShift 57.
@@ -107,6 +107,18 @@
             bindings = <&kp>, <&kp>;
         };
 
+        // Backspace tap + Alt hold (왼엄지 rest). tap-preferred 220ms, quick-tap 0.
+        // QMK TH_BSPC_ALT와 동일 동작; ]는 순수 tap으로 분리한다.
+        bht: backspace_alt_hold_tap {
+            compatible = "zmk,behavior-hold-tap";
+            label = "BACKSPACE_ALT_HOLD_TAP";
+            #binding-cells = <2>;
+            flavor = "tap-preferred";
+            tapping-term-ms = <220>;
+            quick-tap-ms = <0>;
+            bindings = <&kp>, <&kp>;
+        };
+
         // Win hold + native Super Alt-Tab tap.
         // The behavior owns Alt, refreshes its 1000ms window on each tap, and
         // cancels before another physical key is dispatched. Shift positions
@@ -144,15 +156,16 @@
             bindings = <&kp>, <&sk>;
         };
 
-        // 레이어 hold + 키 tap (] → FN층)
-        // tap-preferred: ] tap 직후 빠른 타이핑이 레이어로 오발동하지 않도록.
+        // 레이어 hold + 키 tap (Space → FN층)
+        // tap-preferred: Space tap 직후 빠른 타이핑이 레이어로 오발동하지 않도록.
+        // quick-tap 0: 빠른 재입력 시 tap 강제 구간을 두지 않음(QMK와 동일 설정값).
         plt: pacs_layer_tap {
             compatible = "zmk,behavior-hold-tap";
             label = "PACS_LAYER_TAP";
             #binding-cells = <2>;
             flavor = "tap-preferred";
             tapping-term-ms = <220>;
-            quick-tap-ms = <175>;
+            quick-tap-ms = <0>;
             bindings = <&mo>, <&kp>;
         };
 
@@ -199,6 +212,28 @@
             bindings = <&macro_press &kp LCTRL>
                      , <&macro_tap &kp X>
                      , <&macro_release &kp LCTRL>;
+        };
+
+        end_enter: end_enter {      // End → Enter
+            label = "END_ENTER";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <12>;
+            tap-ms = <8>;
+            bindings = <&macro_tap &kp END>
+                     , <&macro_tap &kp RET>;
+        };
+
+        cend_enter: cend_enter {    // Ctrl+End → Enter
+            label = "CEND_ENTER";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <12>;
+            tap-ms = <8>;
+            bindings = <&macro_press &kp LCTRL>
+                     , <&macro_tap &kp END>
+                     , <&macro_release &kp LCTRL>
+                     , <&macro_tap &kp RET>;
         };
 
         rgb_ug_status_macro: rgb_ug_status_macro_0 {
@@ -348,7 +383,7 @@
             &kp TAB        &kp Q     &kp W     &kp E      &kp R     &kp T                                                                               &kp Y    &kp U    &kp I    &kp O      &kp P     &kp BSLH
             &kp LCTRL      &kp A     &kp S     &kp D      &kp F     &kp G                                                                               &kp H    &kp J    &kp K    &kp L      &kp SEMI  &kp SQT
             &sht LSHFT LSHFT &kp Z   &kp X     &kp C      &kp V     &kp B   &sat_ht LGUI 0  &kp LSHFT  &kp LG(LA(SPACE))    &kp LG(LS(S))    &kp LCTRL    &vht RSHFT RET   &kp N    &kp M    &kp COMMA &kp DOT   &kp FSLH  &kp RET
-            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &kp BSPC        &eht LALT RBKT &kp LC(H) &kp LBKT    &kp RALT      &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
+            &magic MAGIC 0 &kp HOME  &kp LEFT   &kp RIGHT  &kp F14             &bht LALT BSPC   &kp RBKT &kp LC(H) &kp LBKT    &kp RALT      &plt FN SPACE    &kp F13   &kp UP   &kp DOWN  &kp END   &kp RET
             >;
         };
 
@@ -389,14 +424,15 @@
             >;
         };
 
-        /* ── FN (오른엄지 ] hold) — 통합 레이어, 이거 하나뿐 ─────────
+        /* ── FN (오른엄지 Space hold) — 통합 레이어, 이거 하나뿐 ─────
          * 왼손  숫자행 2 3 4 = 윗행/현재행/아랫행 삭제   ← 행 단위
          *       Q W E R      = Home PgDn PgUp End       ← 줄/페이지
          *       A S D F      = ←  ↓  ↑  →               ← 문자 (ASDF 배열)
          *       Z X C V      = C+← 앞단어 뒤단어 C+→     ← 단어
-         *       G = Caps Word,  B = CapsLock,  왼엄지 안쪽 = &to LOWER
-         * 오른손 숫자행 = F15 F16 F17 F18 F19,  '-' 자리 = '='
-         *       U I O P   = F1 F2 F3 F4; \ = base backslash
+         *       G = Win+Shift+←, B = Win+Shift+→, Enter = CapsLock, 왼엄지 안쪽 = &to LOWER
+         *       Tab = Screenshot (Win+Shift+S)
+         * 오른손 숫자행 = 6=Ctrl+Home 7=Ctrl+End 8=End→Enter 9=Ctrl+End→Enter 0=F19, '-' = '='
+         *       U I O P   = F1 F2 F3 F4; \ = Caps Word
          *       J K L ;   = F5 F6 F7 F8
          *       M , . /   = F9 F10 F11 F12
          * 시스템키: 1=Command Palette, Y=Task Manager, H=로컬 보안 화면, N=RDP 보안 화면
@@ -404,11 +440,11 @@
         fn_layer {
             bindings = <
             &trans         &trans    &trans    &trans     &trans                                                                                                &trans   &trans   &trans     &trans    &trans
-            &trans         &kp LG(LA(SPACE))    &ldel_u   &ldel_c    &ldel_d   &kp LBKT                                                                              &kp F15  &kp F16  &kp F17  &kp F18    &kp F19   &kp EQUAL
-            &trans         &kp HOME &kp PG_DN &kp PG_UP &kp END &kp LA(F4)                                                                             &kp LC(LS(ESC))   &kp F1   &kp F2   &kp F3     &kp F4     &trans
-            &trans         &kp LEFT &kp DOWN &kp UP &kp RIGHT &caps_word                                                                           &kp LC(LA(DEL))   &kp F5   &kp F6   &kp F7     &kp F8     &trans
-            &trans         &kp LC(LEFT) &wdel_b &wdel_f &kp LC(RIGHT) &kp CAPS &trans      &trans     &to LOWER    &trans   &trans    &trans          &kp LC(LA(END))   &kp F9   &kp F10  &kp F11  &kp F12    &trans
-            &trans         &kp DEL   &trans    &trans     &trans            &trans            &trans     &trans       &trans   &trans    &trans          &trans   &trans   &trans     &trans    &trans
+            &trans         &kp LG(LA(SPACE))    &ldel_u   &ldel_c    &ldel_d   &kp LBKT                                                                              &kp LC(HOME)  &kp LC(END)  &end_enter  &cend_enter    &kp F19   &kp EQUAL
+            &kp LG(LS(S))  &kp HOME &kp PG_DN &kp PG_UP &kp END &kp LA(F4)                                                                             &kp LC(LS(ESC))   &kp F1   &kp F2   &kp F3     &kp F4     &caps_word
+            &trans         &kp LEFT &kp DOWN &kp UP &kp RIGHT &kp LG(LS(LEFT))                                                                           &kp LC(LA(DEL))   &kp F5   &kp F6   &kp F7     &kp F8     &trans
+            &trans         &kp LC(LEFT) &wdel_b &wdel_f &kp LC(RIGHT) &kp LG(LS(RIGHT)) &trans      &trans     &to LOWER    &trans   &trans    &trans          &kp LC(LA(END))   &kp F9   &kp F10  &kp F11  &kp F12    &kp CAPS
+            &trans         &kp DEL   &trans    &trans     &trans            &wdel_b     &kp F20     &trans       &trans   &trans    &trans          &trans   &trans   &trans     &trans    &trans
             >;
         };
     };
